@@ -13,7 +13,9 @@ class CNNLoss(nn.Module):
     def FFT_loss(self, input, target):
         input_fft = th.fft.fftn(input)
         target_fft = th.fft.fftn(target)
-        return th.mean(th.abs(input_fft - target_fft) ** 2)
+        loss = th.mean(th.abs(input_fft - target_fft) ** 2)
+        print(loss)
+        return loss
     
     def DWT_loss(self, input, target, J=3):
         xfm = DWTForward(J=J, mode="zero", wave='db3').to(input.device)
@@ -24,7 +26,10 @@ class CNNLoss(nn.Module):
         loss = 0.0
         for i in range(J):
             loss += th.mean(th.abs(H_in[i] - H_tar[i]) ** 2)
+        print(loss)
         return loss
     
     def Spatial_loss(self, input, target):
-        return th.mean(th.abs(input - target) ** 2)
+        loss = th.mean(th.abs(input - target) ** 2)
+        print(loss)
+        return loss

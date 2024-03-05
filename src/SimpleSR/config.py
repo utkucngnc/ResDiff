@@ -22,7 +22,7 @@ random.seed(0)
 torch.manual_seed(0)
 np.random.seed(0)
 # Use GPU for training by default
-device = torch.device("cuda", 0)
+device = torch.device("cuda", 0) if torch.cuda.is_available() else torch.device("cpu")
 # Turning on when the image size does not change during training can speed up training
 cudnn.benchmark = True
 # When evaluating the performance of the SR model, whether to verify only the Y channel image data
@@ -48,7 +48,7 @@ if mode == "train":
 
     gt_image_size = 512
     batch_size = 16
-    num_workers = 4
+    num_workers = 1
 
     # The address to load the pretrained model
     pretrained_model_weights_path = f""
@@ -57,7 +57,7 @@ if mode == "train":
     resume_model_weights_path = f""
 
     # Total num epochs
-    epochs = 100
+    epochs = 1
 
     # loss function weights
     loss_weights = 1.0

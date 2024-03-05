@@ -24,7 +24,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 import src.SimpleSR.config as config
 import src.SimpleSR.backbone as model
-from src.SimpleSR.dataset import CUDAPrefetcher, TrainValidImageDataset, TestImageDataset
+from src.SimpleSR.dataset import CPUPrefetcher, CUDAPrefetcher, TrainValidImageDataset, TestImageDataset
 from src.SimpleSR.image_quality_assessment import PSNR, SSIM
 from src.SimpleSR.utils import load_state_dict, make_directory, save_checkpoint, AverageMeter, ProgressMeter
 from src.SimpleSR.loss import CNNLoss
@@ -129,7 +129,8 @@ def main():
                         is_last)
 
 
-def load_dataset() -> [CUDAPrefetcher, CUDAPrefetcher]:
+def load_dataset() -> [CPUPrefetcher, CPUPrefetcher]:
+#def load_dataset() -> [DataLoader, DataLoader]:
     # Load train, test and valid datasets
     train_datasets = TrainValidImageDataset(config.train_gt_images_dir,
                                             config.gt_image_size,
@@ -154,10 +155,11 @@ def load_dataset() -> [CUDAPrefetcher, CUDAPrefetcher]:
                                  persistent_workers=True)
 
     # Place all data on the preprocessing data loader
-    train_prefetcher = CUDAPrefetcher(train_dataloader, config.device)
-    test_prefetcher = CUDAPrefetcher(test_dataloader, config.device)
+    train_prefetcher = CPUPrefetcher(train_dataloader)
+    test_prefetcher = CPUPrefetcher(test_dataloader)
 
     return train_prefetcher, test_prefetcher
+    #return train_dataloader, test_dataloader
 
 
 def build_model() -> nn.Module:
@@ -194,7 +196,7 @@ def define_scheduler(optimizer) -> lr_scheduler.MultiStepLR:
 
 def train(
         espcn_model: nn.Module,
-        train_prefetcher: CUDAPrefetcher,
+        train_prefetcher: CPUPrefetcher,
         criterion: nn.Module,
         optimizer: optim.Adam,
         epoch: int,
