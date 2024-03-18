@@ -50,9 +50,8 @@ class SimpleSR(nn.Module):
     def __forward_impl(self, x: th.Tensor) -> th.Tensor:
         res = nn.UpsamplingBilinear2d(scale_factor=self.scale_factor)(x)
         x = self.feat_map(x)
-        x = self.sub_pixel_conv(x).float()
-        #out = th.clamp_(x + res, 0.0, 1.0)
-        return th.clamp_(x, 0.0, 1.0)
+        x = self.sub_pixel_conv(x)
+        return th.clamp_(x + res, 0.0, 1.0)
 
 def SimpleSR_2x(**kwargs) -> SimpleSR:
     return SimpleSR(scale_factor=2, **kwargs)

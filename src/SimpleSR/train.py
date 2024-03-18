@@ -238,7 +238,7 @@ def train(
         # Mixed precision training
         with amp.autocast():
             sr = espcn_model(lr)
-            loss = torch.mul(config.loss_weights, criterion(sr, gt))
+            loss = torch.mul(torch.tensor(config.loss_weights).to(torch.float16), criterion(sr, gt))
         # Backpropagation
         scaler.scale(loss).backward()
         # update generator weights

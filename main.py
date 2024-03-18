@@ -1,3 +1,3 @@
-from src.SimpleSR.train import main
+from src.SimpleSR.inference import main
 
 main()

@@ -1,25 +1,13 @@
-# Copyright 2022 Dakewe Biotech Corporation. All Rights Reserved.
-# Licensed under the Apache License, Version 2.0 (the "License");
-#   you may not use this file except in compliance with the License.
-#   You may obtain a copy of the License at
-#
-#       http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-# ==============================================================================
 import os
 import queue
 import threading
 
+import torch as th
+from torch.utils.data import DataLoader, Dataset
+
 import cv2
 import numpy as np
-import torch
-from torch import Tensor
-from torch.utils.data import Dataset, DataLoader
+from typing import Union
 
 import src.SimpleSR.imgproc as imgproc
 
@@ -54,7 +42,7 @@ class TrainValidImageDataset(Dataset):
         self.upscale_factor = upscale_factor
         self.mode = mode
 
-    def __getitem__(self, batch_index: int) -> [dict[str, Tensor], dict[str, Tensor]]:
+    def __getitem__(self, batch_index: int) -> Union[dict[str, th.Tensor], dict[str, th.Tensor]]:
         # Read a batch of image data
         gt_crop_image = cv2.imread(self.image_file_names[batch_index]).astype(np.float32) / 255.
 
@@ -82,7 +70,6 @@ class TrainValidImageDataset(Dataset):
     def __len__(self) -> int:
         return len(self.image_file_names)
 
-
 class TestImageDataset(Dataset):
     """Define Test dataset loading methods.
 
@@ -97,7 +84,7 @@ class TestImageDataset(Dataset):
         self.gt_image_file_names = [os.path.join(test_gt_images_dir, x) for x in os.listdir(test_gt_images_dir)]
         self.lr_image_file_names = [os.path.join(test_lr_images_dir, x) for x in os.listdir(test_lr_images_dir)]
 
-    def __getitem__(self, batch_index: int) -> [torch.Tensor, torch.Tensor]:
+    def __getitem__(self, batch_index: int) -> Union[th.Tensor, th.Tensor]:
         # Read a batch of image data
         gt_image = cv2.imread(self.gt_image_file_names[batch_index]).astype(np.float32) / 255.
         lr_image = cv2.imread(self.lr_image_file_names[batch_index]).astype(np.float32) / 255.
@@ -115,7 +102,6 @@ class TestImageDataset(Dataset):
 
     def __len__(self) -> int:
         return len(self.gt_image_file_names)
-
 
 class PrefetchGenerator(threading.Thread):
     """A fast data prefetch generator.
@@ -146,7 +132,6 @@ class PrefetchGenerator(threading.Thread):
     def __iter__(self):
         return self
 
-
 class PrefetchDataLoader(DataLoader):
     """A fast data prefetch dataloader.
 
@@ -161,7 +146,6 @@ class PrefetchDataLoader(DataLoader):
 
     def __iter__(self):
         return PrefetchGenerator(super().__iter__(), self.num_data_prefetch_queue)
-
 
 class CPUPrefetcher:
     """Use the CPU side to accelerate data reading.
@@ -195,13 +179,13 @@ class CUDAPrefetcher:
         device (torch.device): Specify running device.
     """
 
-    def __init__(self, dataloader: DataLoader, device: torch.device):
+    def __init__(self, dataloader: DataLoader, device: th.device):
         self.batch_data = None
         self.original_dataloader = dataloader
         self.device = device
 
         self.data = iter(dataloader)
-        self.stream = torch.cuda.Stream()
+        self.stream = th.cuda.Stream()
         self.preload()
 
     def preload(self):
@@ -211,13 +195,13 @@ class CUDAPrefetcher:
             self.batch_data = None
             return None
 
-        with torch.cuda.stream(self.stream):
+        with th.cuda.stream(self.stream):
             for k, v in self.batch_data.items():
-                if torch.is_tensor(v):
+                if th.is_tensor(v):
                     self.batch_data[k] = self.batch_data[k].to(self.device, non_blocking=True)
 
     def next(self):
-        torch.cuda.current_stream().wait_stream(self.stream)
+        th.cuda.current_stream().wait_stream(self.stream)
         batch_data = self.batch_data
         self.preload()
         return batch_data

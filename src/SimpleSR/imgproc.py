@@ -1,6 +1,6 @@
 import math
 import random
-from typing import Any
+from typing import Any, Union
 
 import cv2
 import numpy as np
@@ -44,7 +44,7 @@ def _calculate_weights_indices(in_length: int,
                                out_length: int,
                                scale: float,
                                kernel_width: int,
-                               antialiasing: bool) -> [np.ndarray, np.ndarray, int, int]:
+                               antialiasing: bool) -> Union[np.ndarray, np.ndarray, int, int]:
     """Implementation of `calculate_weights_indices` function in Matlab under Python language.
 
     Args:
@@ -173,7 +173,7 @@ def tensor_to_image(tensor: Tensor, range_norm: bool, half: bool) -> Any:
     return image
 
 
-def preprocess_one_image(image_path: str, device: torch.device) -> [Tensor, ndarray, ndarray]:
+def preprocess_one_image(image_path: str, device: torch.device) -> Union[Tensor, ndarray, ndarray]:
     image = cv2.imread(image_path).astype(np.float32) / 255.0
 
     # BGR to YCbCr
@@ -573,7 +573,7 @@ def center_crop_torch(
         lr_images: ndarray | Tensor | list[ndarray] | list[Tensor],
         gt_patch_size: int,
         upscale_factor: int,
-) -> [ndarray, ndarray] or [Tensor, Tensor] or [list[ndarray], list[ndarray]] or [list[Tensor], list[Tensor]]:
+) -> Union[Union[ndarray, ndarray] | Union[Tensor, Tensor] | Union[list[ndarray], list[ndarray]] | Union[list[Tensor], list[Tensor]]]:
     if not isinstance(gt_images, list):
         gt_images = [gt_images]
     if not isinstance(lr_images, list):
@@ -636,7 +636,7 @@ def random_crop_torch(
         lr_images: ndarray | Tensor | list[ndarray] | list[Tensor],
         gt_patch_size: int,
         upscale_factor: int,
-) -> [ndarray, ndarray] or [Tensor, Tensor] or [list[ndarray], list[ndarray]] or [list[Tensor], list[Tensor]]:
+) -> Union[Union[ndarray, ndarray] | Union[Tensor, Tensor] | Union[list[ndarray], list[ndarray]] | Union[list[Tensor], list[Tensor]]]:
     if not isinstance(gt_images, list):
         gt_images = [gt_images]
     if not isinstance(lr_images, list):
@@ -702,7 +702,7 @@ def random_rotate_torch(
         gt_center: tuple = None,
         lr_center: tuple = None,
         rotate_scale_factor: float = 1.0
-) -> [ndarray, ndarray] or [Tensor, Tensor] or [list[ndarray], list[ndarray]] or [list[Tensor], list[Tensor]]:
+) -> Union[Union[ndarray, ndarray] | Union[Tensor, Tensor] | Union[list[ndarray], list[ndarray]] | Union[list[Tensor], list[Tensor]]]:
     # Random select specific angle
     angle = random.choice(angles)
 
@@ -757,7 +757,7 @@ def random_horizontally_flip_torch(
         gt_images: ndarray | Tensor | list[ndarray] | list[Tensor],
         lr_images: ndarray | Tensor | list[ndarray] | list[Tensor],
         p: float = 0.5
-) -> [ndarray, ndarray] or [Tensor, Tensor] or [list[ndarray], list[ndarray]] or [list[Tensor], list[Tensor]]:
+) -> Union[Union[ndarray, ndarray] | Union[Tensor, Tensor] | Union[list[ndarray], list[ndarray]] | Union[list[Tensor], list[Tensor]]]:
     # Get horizontal flip probability
     flip_prob = random.random()
 
@@ -790,7 +790,7 @@ def random_vertically_flip_torch(
         gt_images: ndarray | Tensor | list[ndarray] | list[Tensor],
         lr_images: ndarray | Tensor | list[ndarray] | list[Tensor],
         p: float = 0.5
-) -> [ndarray, ndarray] or [Tensor, Tensor] or [list[ndarray], list[ndarray]] or [list[Tensor], list[Tensor]]:
+) -> Union[Union[ndarray, ndarray] | Union[Tensor, Tensor] | Union[list[ndarray], list[ndarray]] | Union[list[Tensor], list[Tensor]]]:
     # Get vertical flip probability
     flip_prob = random.random()
 
