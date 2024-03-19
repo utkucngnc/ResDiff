@@ -163,8 +163,8 @@ def load_dataset() -> [CPUPrefetcher, CPUPrefetcher]:
 
 
 def build_model() -> nn.Module:
-    espcn_model = model.__dict__[config.model_arch_name](in_ch=config.in_channels,
-                                                         out_ch=config.out_channels,
+    espcn_model = model.__dict__[config.model_arch_name](in_ch=config.in_ch,
+                                                         out_ch=config.out_ch,
                                                          channels=config.channels)
     espcn_model = espcn_model.to(device=config.device)
 

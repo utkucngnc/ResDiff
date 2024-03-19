@@ -30,8 +30,8 @@ only_test_y_channel = False
 # Model architecture name
 model_arch_name = 'SimpleSR_4x'
 # Model arch config
-in_channels = 1
-out_channels = 1
+in_ch = 1
+out_ch = 1
 channels = 64
 upscale_factor = 4
 # Current configuration parameter method
@@ -57,7 +57,7 @@ if mode == "train":
     resume_model_weights_path = f""
 
     # Total num epochs
-    epochs = 1
+    epochs = 200
 
     # loss function weights
     loss_weights = 1.0

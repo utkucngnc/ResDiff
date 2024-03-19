@@ -31,7 +31,7 @@ class DiscreteWaveletLoss(nn.Module):
         coeff_y = self.forward_dwt(y)
 
         loss = th.stack([th.mean(th.abs(coeff_x[i] - coeff_y[i]) ** 2) for i in range(3)]).sum()
-        print(loss)
+        #print(loss)
         return self.loss_weight * loss
 
 class FocalFrequencyLoss(nn.Module):
@@ -137,7 +137,7 @@ class FocalFrequencyLoss(nn.Module):
 
         # calculate focal frequency loss
         loss = self.loss_formulation(pred_freq, target_freq, matrix)
-        print(loss)
+        #print(loss)
         return loss * self.loss_weight
 
 class L2Loss(nn.Module):
@@ -146,7 +146,7 @@ class L2Loss(nn.Module):
     
     def forward(self, x: th.Tensor, y: th.Tensor):
         loss = th.mean(th.abs(x - y) ** 2)
-        print(loss)
+        #print(loss)
         return loss
         
 class CNNLoss(nn.Module):

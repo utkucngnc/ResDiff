@@ -40,8 +40,8 @@ def choice_device(device_type: str) -> torch.device:
 
 def build_model(model_arch_name: str, device: torch.device) -> nn.Module:
     # Initialize the super-resolution model
-    sr_model = model.__dict__[model_arch_name](in_channels=1,
-                                               out_channels=1,
+    sr_model = model.__dict__[model_arch_name](in_ch=1,
+                                               out_ch=1,
                                                channels=64)
     sr_model = sr_model.to(device=device)
 
@@ -85,32 +85,3 @@ def main(args: argparse.Namespace):
     cv2.imwrite(args.output_path, sr_image * 255.0)
 
     print(f"SR image save to `{args.output_path}`")
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Using the model generator super-resolution images.")
-    parser.add_argument("--model_arch_name",
-                        type=str,
-                        default="espcn_x4")
-    parser.add_argument("--upscale_factor",
-                        type=int,
-                        default=4)
-    parser.add_argument("--inputs_path",
-                        type=str,
-                        default="./figure/comic.png",
-                        help="Low-resolution image path.")
-    parser.add_argument("--output_path",
-                        type=str,
-                        default="./figure/sr_comic.png",
-                        help="Super-resolution image path.")
-    parser.add_argument("--model_weights_path",
-                        type=str,
-                        default="./results/pretrained_models/ESPCN_x4-T91-64bf5ee4.pth.tar",
-                        help="Model weights file path.")
-    parser.add_argument("--device_type",
-                        type=str,
-                        default="cpu",
-                        choices=["cpu", "cuda"])
-    args = parser.parse_args()
-
-    main(args)
