@@ -154,9 +154,8 @@ class CNNLoss(nn.Module):
         super(CNNLoss, self).__init__()
     
     def forward(self, x: th.Tensor, y: th.Tensor, alpha: float = 0.12, beta: float = 0.10):
-        total_loss = 0.0
         fft_loss = FocalFrequencyLoss(loss_weight=alpha)(x, y)
         wavelet_loss = DiscreteWaveletLoss(loss_weight=beta)(x, y)
         spatial_loss = L2Loss()(x, y)
-        total_loss += fft_loss + wavelet_loss + spatial_loss
-        return total_loss
+        total_loss = fft_loss + wavelet_loss + spatial_loss
+        return L2Loss()(x, y)

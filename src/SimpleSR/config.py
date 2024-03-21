@@ -81,8 +81,8 @@ if mode == "train":
 
 if mode == "test":
     # Test data address
-    lr_dir = f"./data/Set5/LRbicx{upscale_factor}"
+    lr_dir = f"./data_128"
     sr_dir = f"./results/test/{exp_name}"
-    gt_dir = "./data/Set5/GTmod12"
+    gt_dir = "./data_512"
 
     model_weights_path = "./results/pretrained_models/ESPCN_x4-T91-64bf5ee4.pth.tar"
